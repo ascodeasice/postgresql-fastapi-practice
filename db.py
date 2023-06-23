@@ -21,8 +21,10 @@ class Database:
                     user=self.user,
                     password=self.password,
                 )
+                self.conn.autocommit = True
                 print("PostgresSQL connected")
-        except Exception:
+        except Exception as exc:
+            print(exc)
             raise HTTPException(
                 status_code=500,
                 detail="An error occurred while processing the request.",
@@ -40,7 +42,8 @@ class Database:
             result = cursor.fetchall()
             cursor.close()
             return result
-        except Exception:
+        except Exception as exc:
+            print(exc)
             raise HTTPException(
                 status_code=500,
                 detail="An error occurred while processing the request.",
@@ -54,7 +57,8 @@ class Database:
             result = cursor.fetchone()
             cursor.close()
             return result
-        except Exception:
+        except Exception as exc:
+            print(exc)
             raise HTTPException(
                 status_code=500,
                 detail="An error occurred while processing the request.",
@@ -67,7 +71,8 @@ class Database:
             cursor.execute(query, args)
             self.conn.commit()
             cursor.close()
-        except Exception:
+        except Exception as exc:
+            print(exc)
             raise HTTPException(
                 status_code=500,
                 detail="An error occurred while processing the request.",
