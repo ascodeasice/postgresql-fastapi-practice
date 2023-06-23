@@ -2,7 +2,7 @@ const fetchBackend = (path, method = 'GET', body = null) => {
   const jwt=window.localStorage.getItem('jwt');
   const headers = {
     'Content-Type': 'application/json',
-    Authorization: jwt
+    token: jwt
   };
 
   return fetch(`${import.meta.env.VITE_BACKEND_HOST}${path}`, {
