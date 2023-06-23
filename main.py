@@ -49,12 +49,14 @@ def get_user_data():
 @app.post("/sign-up")
 def sign_up(user: UserCreate):
     # TODO: encrypt the password, then save in database
+    user_exists = False
     try:
         # Check if the username already exists
         result = db.execute_query_one(
             "SELECT COUNT(*) FROM public.user WHERE username = %s;", user.username
         )
         if result[0] > 0:
+            user_exists = True
             raise HTTPException(status_code=400, detail="Username already exists.")
 
         # Insert the user into the database
@@ -66,10 +68,13 @@ def sign_up(user: UserCreate):
 
         return {"message": "User created successfully."}
 
-    except (psycopg2.Error, Exception) as e:
-        print(e)
+    except (psycopg2.Error, Exception):
+        # the raised exception will be caught
+        if user_exists:
+            raise HTTPException(status_code=400, detail="Username already exists.")
         raise HTTPException(
-            status_code=500, detail="An error occurred while processing the request."
+            status_code=500,
+            detail="An error occurred while processing the request.",
         )
 
 
