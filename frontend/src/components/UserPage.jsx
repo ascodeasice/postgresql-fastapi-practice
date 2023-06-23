@@ -10,7 +10,9 @@ import {
   Flex,
   HStack,
   Button,
-  ButtonGroup
+  ButtonGroup,
+  FormControl,
+  useToast
 } from '@chakra-ui/react';
 import { fetchBackend } from '../fetch';
 import jwt_decode from 'jwt-decode';
@@ -23,6 +25,7 @@ const UserPage = () => {
   const [birthday, setBirthday] = useState('');
   const [errMessage, setErrMessage] = useState('')
   const [username, setUsername] = useState('');
+  const toast = useToast()
 
   const fetchUser = async () => {
     try {
@@ -62,7 +65,14 @@ const UserPage = () => {
       console.error(res);
       setErrMessage(res.detail);
     }else{
-      console.log('saved')
+      setErrMessage('');
+      toast({
+        title: 'Saved.',
+        description: "We've saved your changes",
+        status: 'success',
+        duration: 9000,
+        isClosable: true,
+      })
     }
    }
 
