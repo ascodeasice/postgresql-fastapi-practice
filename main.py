@@ -107,7 +107,6 @@ def sign_up(user: UserCreate):
 # Login endpoint
 @app.post("/login")
 def login(user: UserLogin):
-    # TODO: update user's last_login
     # Check if the username and password match
     result = db.execute_query_one(
         "SELECT COUNT(*) FROM public.user WHERE username = %s AND password = %s;",
@@ -117,6 +116,10 @@ def login(user: UserLogin):
     # not exist
     if result[0] == 0:
         raise HTTPException(status_code=401, detail="Invalid username or password.")
+
+    # update last_login
+    query = "UPDATE public.user SET last_login=%s WHERE username=%s"
+    db.execute_query_insert(query, datetime.utcnow(), user.username)
 
     encoded_jwt = jwt.encode(
         {"username": user.username}, os.environ.get("JWT_SECRET"), algorithm="HS256"
