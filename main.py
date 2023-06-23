@@ -87,31 +87,21 @@ def sign_up(user: UserCreate):
 # Login endpoint
 @app.post("/login")
 def login(user: UserLogin):
-    login_is_invalid = False
     # TODO: update user's last_login
-    try:
-        # Check if the username and password match
-        result = db.execute_query_one(
-            "SELECT COUNT(*) FROM public.user WHERE username = %s AND password = %s;",
-            user.username,
-            user.password,
-        )
-        # not exist
-        if result[0] == 0:
-            login_is_invalid = True
-            raise HTTPException(status_code=401, detail="Invalid username or password.")
+    # Check if the username and password match
+    result = db.execute_query_one(
+        "SELECT COUNT(*) FROM public.user WHERE username = %s AND password = %s;",
+        user.username,
+        user.password,
+    )
+    # not exist
+    if result[0] == 0:
+        raise HTTPException(status_code=401, detail="Invalid username or password.")
 
-        encoded_jwt = jwt.encode(
-            {"username": user.username}, os.environ.get("JWT_SECRET"), algorithm="HS256"
-        )
-        return {"jwt": encoded_jwt}
-
-    except (psycopg2.Error, Exception) as e:
-        if login_is_invalid:
-            raise HTTPException(status_code=401, detail="Invalid username or password.")
-        raise HTTPException(
-            status_code=500, detail="An error occurred while processing the request."
-        )
+    encoded_jwt = jwt.encode(
+        {"username": user.username}, os.environ.get("JWT_SECRET"), algorithm="HS256"
+    )
+    return {"jwt": encoded_jwt}
 
 
 # Route to get user data
@@ -143,21 +133,12 @@ def get_user(username: str, token: str = Header(None)):
             user_data[field] = result[index]
 
         return user_data
-
     except jwt.DecodeError:
         raise HTTPException(status_code=401, detail="Invalid JWT.")
     except jwt.ExpiredSignatureError:
         raise HTTPException(status_code=401, detail="Expired JWT.")
-    except (psycopg2.Error, Exception) as error:
-        if error.status_code == 401:
-            raise HTTPException(status_code=401, detail="Invalid JWT.")
-        elif error.status_code == 404:
-            raise HTTPException(status_code=404, detail="User not found.")
-        else:
-            raise HTTPException(
-                status_code=500,
-                detail="An error occurred while processing the request.",
-            )
+    except Exception as exc:
+        raise exc  # raise again
 
 
 @app.on_event("startup")

@@ -1,4 +1,5 @@
 import psycopg2
+from fastapi import HTTPException
 
 
 class Database:
@@ -11,39 +12,63 @@ class Database:
         self.conn = None
 
     def connect(self):
-        if self.conn is None or self.conn.closed != 0:
-            self.conn = psycopg2.connect(
-                host=self.host,
-                port=self.port,
-                database=self.database,
-                user=self.user,
-                password=self.password,
+        try:
+            if self.conn is None or self.conn.closed != 0:
+                self.conn = psycopg2.connect(
+                    host=self.host,
+                    port=self.port,
+                    database=self.database,
+                    user=self.user,
+                    password=self.password,
+                )
+                print("PostgresSQL connected")
+        except Exception:
+            raise HTTPException(
+                status_code=500,
+                detail="An error occurred while processing the request.",
             )
-            print("PostgresSQL connected")
 
     def disconnect(self):
         if self.conn is not None and self.conn.closed == 0:
             self.conn.close()
 
     def execute_query(self, query, *args):
-        self.connect()
-        cursor = self.conn.cursor()
-        cursor.execute(query, args)
-        result = cursor.fetchall()
-        cursor.close()
-        return result
+        try:
+            self.connect()
+            cursor = self.conn.cursor()
+            cursor.execute(query, args)
+            result = cursor.fetchall()
+            cursor.close()
+            return result
+        except Exception:
+            raise HTTPException(
+                status_code=500,
+                detail="An error occurred while processing the request.",
+            )
 
     def execute_query_one(self, query, *args):
-        self.connect()
-        cursor = self.conn.cursor()
-        cursor.execute(query, args)
-        result = cursor.fetchone()
-        cursor.close()
-        return result
+        try:
+            self.connect()
+            cursor = self.conn.cursor()
+            cursor.execute(query, args)
+            result = cursor.fetchone()
+            cursor.close()
+            return result
+        except Exception:
+            raise HTTPException(
+                status_code=500,
+                detail="An error occurred while processing the request.",
+            )
 
     def execute_query_insert(self, query, *args):
-        self.connect()
-        cursor = self.conn.cursor()
-        cursor.execute(query, args)
-        self.conn.commit()
-        cursor.close()
+        try:
+            self.connect()
+            cursor = self.conn.cursor()
+            cursor.execute(query, args)
+            self.conn.commit()
+            cursor.close()
+        except Exception:
+            raise HTTPException(
+                status_code=500,
+                detail="An error occurred while processing the request.",
+            )
