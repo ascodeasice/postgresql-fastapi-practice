@@ -13,4 +13,4 @@ class User(Base):
     password = Column(UnicodeText, nullable=False)
     birthday = Column(Date)
     created_time = Column(DateTime, default=datetime.utcnow)
-    last_login = Column(Date, nullable=True)
+    last_login = Column(DateTime, nullable=True)

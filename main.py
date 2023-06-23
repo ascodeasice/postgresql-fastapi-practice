@@ -58,7 +58,7 @@ class User(BaseModel):
     password: str
     birthday: date
     created_time: datetime
-    last_login: date
+    last_login: datetime
 
 
 class UserUpdate(BaseModel):
