@@ -1,5 +1,5 @@
 const fetchBackend = (path, method = 'GET', body = null) => {
-  const jwt=window.localStorage.getItem('jwt');
+  const jwt = window.localStorage.getItem('jwt');
   const headers = {
     'Content-Type': 'application/json',
     token: jwt
