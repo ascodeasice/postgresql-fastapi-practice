@@ -29,3 +29,7 @@ A full-stack website that allow user to sign up, login and edit their data like 
 - Use FastAPI and PostgreSQL for backend
 - Use Alembic for database migration
 - Use poetry for package management
+
+## Result
+
+![screenshot](./assets/images/screenshot.png)
