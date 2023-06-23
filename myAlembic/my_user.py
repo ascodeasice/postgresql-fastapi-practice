@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from sqlalchemy import Column, Date, Integer, String, UnicodeText
+from sqlalchemy import Column, Date, DateTime, UnicodeText
 from sqlalchemy.ext.declarative import declarative_base
 
 Base = declarative_base()
@@ -9,8 +9,8 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = "user"
 
-    user_id = Column(Integer, primary_key=True)
-    user_name = Column(UnicodeText, nullable=False)
+    username = Column(UnicodeText, primary_key=True)
+    password = Column(UnicodeText, nullable=False)
     birthday = Column(Date)
-    created_time = Column(Date, default=datetime.now())
+    created_time = Column(DateTime, default=datetime.utcnow)
     last_login = Column(Date, nullable=True)

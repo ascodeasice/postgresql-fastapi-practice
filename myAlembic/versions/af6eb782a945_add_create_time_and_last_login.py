@@ -22,10 +22,13 @@ def upgrade() -> None:
     op.add_column(
         "user",
         sa.Column(
-            "created_time", sa.Date(), nullable=False, server_default=datetime.now()
+            "created_time",
+            sa.DateTime,
+            nullable=False,
+            server_default=sa.func.current_timestamp(),
         ),
     )
-    op.add_column("user", sa.Column("last_login", sa.Date(), nullable=True))
+    op.add_column("user", sa.Column("last_login", sa.Date, nullable=True))
 
 
 def downgrade() -> None:
