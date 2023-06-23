@@ -11,7 +11,6 @@ import {
   HStack,
   Button,
   ButtonGroup,
-  FormControl,
   useToast
 } from '@chakra-ui/react';
 import { fetchBackend } from '../fetch';
@@ -23,9 +22,9 @@ const UserPage = () => {
   const [user, setUser] = useState(null);
   const [password, setPassword] = useState('');
   const [birthday, setBirthday] = useState('');
-  const [errMessage, setErrMessage] = useState('')
+  const [errMessage, setErrMessage] = useState('');
   const [username, setUsername] = useState('');
-  const toast = useToast()
+  const toast = useToast();
 
   const fetchUser = async () => {
     try {
@@ -56,30 +55,30 @@ const UserPage = () => {
     }
   }, [jwt]);
 
-  const save = async() => {
-    const res=await fetchBackend(`/user/${username}`,'PUT',{
-      password:password,
-      birthday:birthday
+  const save = async () => {
+    const res = await fetchBackend(`/user/${username}`, 'PUT', {
+      password,
+      birthday
     });
-    if(res.status!==200){
+    if (res.status !== 200) {
       console.error(res);
       setErrMessage(res.detail);
-    }else{
+    } else {
       setErrMessage('');
       toast({
         title: 'Saved.',
         description: "We've saved your changes",
         status: 'success',
         duration: 9000,
-        isClosable: true,
-      })
+        isClosable: true
+      });
     }
-   }
+  };
 
   const logOut = () => {
     window.localStorage.clear();
     navigate('/login');
-   }
+  };
 
   if (!user) {
     return <Text>Loading...</Text>;
@@ -92,14 +91,14 @@ const UserPage = () => {
         <Text>{`username: ${user?.username}`}</Text>
         <HStack>
           <Text as='u'>password: </Text>
-          <Editable value={password} onChange={(nextValue)=>setPassword(nextValue)}>
+          <Editable value={password} onChange={(nextValue) => setPassword(nextValue)}>
             <EditablePreview />
             <EditableInput />
           </Editable>
         </HStack>
         <HStack>
           <Text as='u'>birthday: </Text>
-          <Editable value={birthday} onChange={(nextValue)=>setBirthday(nextValue)}>
+          <Editable value={birthday} onChange={(nextValue) => setBirthday(nextValue)}>
             <EditablePreview />
             <EditableInput />
           </Editable>
@@ -107,11 +106,11 @@ const UserPage = () => {
 
         <Text>{`created_time: ${user?.created_time}`}</Text>
         <Text>{`last_login: ${user?.last_login}`}</Text>
-        <Text color={'red.500'}>{errMessage}</Text>
+        <Text color='red.500'>{errMessage}</Text>
       </Flex>
       <ButtonGroup>
-      <Button colorScheme='blue' onClick={save}>Save</Button>
-      <Button colorScheme='gray' onClick={logOut}>Log out</Button>
+        <Button colorScheme='blue' onClick={save}>Save</Button>
+        <Button colorScheme='gray' onClick={logOut}>Log out</Button>
       </ButtonGroup>
     </VStack>
   );
