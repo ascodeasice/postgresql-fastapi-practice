@@ -14,6 +14,7 @@ psycopg2-binary = "^2.9.6"
 fastapi = "^0.98.0"
 uvicorn = {extras = ["standard"], version = "^0.22.0"}
 pydantic = "^1.10.9"
+pyjwt = "^2.7.0"
 
 
 [tool.poetry.group.dev.dependencies]

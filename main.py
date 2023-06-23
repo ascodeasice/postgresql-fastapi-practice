@@ -1,5 +1,6 @@
 import os
 
+import jwt
 import psycopg2
 from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
@@ -68,13 +69,43 @@ def sign_up(user: UserCreate):
 
         return {"message": "User created successfully."}
 
-    except (psycopg2.Error, Exception):
+    except (psycopg2.Error, Exception) as e:
         # the raised exception will be caught
+        print(e)
         if user_exists:
             raise HTTPException(status_code=400, detail="Username already exists.")
         raise HTTPException(
             status_code=500,
             detail="An error occurred while processing the request.",
+        )
+
+
+# Login endpoint
+@app.post("/login")
+def login(user: UserLogin):
+    login_is_invalid = False
+    try:
+        # Check if the username and password match
+        result = db.execute_query_one(
+            "SELECT COUNT(*) FROM public.user WHERE username = %s AND password = %s;",
+            user.username,
+            user.password,
+        )
+        # not exist
+        if result[0] == 0:
+            login_is_invalid = True
+            raise HTTPException(status_code=401, detail="Invalid username or password.")
+
+        encoded_jwt = jwt.encode(
+            {"username": user.username}, os.environ["JWT_SECRET"], algorithm="HS256"
+        )
+        return {"jwt": encoded_jwt}
+
+    except (psycopg2.Error, Exception) as e:
+        if login_is_invalid:
+            raise HTTPException(status_code=401, detail="Invalid username or password.")
+        raise HTTPException(
+            status_code=500, detail="An error occurred while processing the request."
         )
 
 
