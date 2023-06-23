@@ -22,6 +22,7 @@ const UserPage = () => {
   const [password, setPassword] = useState('');
   const [birthday, setBirthday] = useState('');
   const [errMessage, setErrMessage] = useState('')
+  const [username, setUsername] = useState('');
 
   const fetchUser = async () => {
     try {
@@ -30,10 +31,12 @@ const UserPage = () => {
       const res = await fetchBackend(`/user/${username}`);
       if (res.status === 200) {
         setUser(res);
+        setUsername(res.username);
         setPassword(res.password);
         setBirthday(res.birthday);
       } else {
         console.error(res);
+        navigate('/login');
       }
     } catch (err) {
       console.error(err);
@@ -49,6 +52,19 @@ const UserPage = () => {
       navigate('/login');
     }
   }, [jwt]);
+
+  const save = async() => {
+    const res=await fetchBackend(`/user/${username}`,'PUT',{
+      password:password,
+      birthday:birthday
+    });
+    if(res.status!==200){
+      console.error(res);
+      setErrMessage(res.detail);
+    }else{
+      console.log('saved')
+    }
+   }
 
   const logOut = () => {
     window.localStorage.clear();
@@ -84,7 +100,7 @@ const UserPage = () => {
         <Text color={'red.500'}>{errMessage}</Text>
       </Flex>
       <ButtonGroup>
-      <Button colorScheme='blue'>Save</Button>
+      <Button colorScheme='blue' onClick={save}>Save</Button>
       <Button colorScheme='gray' onClick={logOut}>Log out</Button>
       </ButtonGroup>
     </VStack>
