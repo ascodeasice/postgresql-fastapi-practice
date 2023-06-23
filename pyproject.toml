@@ -1,0 +1,15 @@
+[tool.poetry]
+name = "backend-practice"
+version = "0.1.0"
+description = ""
+authors = ["Leo Wang <ab0988956087@gamil.com>"]
+readme = "README.md"
+packages = [{include = "backend_practice"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
